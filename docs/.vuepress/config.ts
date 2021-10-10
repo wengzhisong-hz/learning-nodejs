@@ -11,15 +11,6 @@ export default defineUserConfig<DefaultThemeOptions>({
         text: "源码解读",
         children: ["/sourceCode/buffer.md"],
       },
-      {
-        text: "框架",
-        children: [
-          {
-            text: "Koa",
-            children: ["/Koa/index.md"],
-          },
-        ],
-      },
     ],
   },
 });
