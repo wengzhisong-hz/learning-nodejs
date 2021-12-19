@@ -1,6 +1,0 @@
-node_modules
-.temp
-.cache
-docs/.vuepress/dist
-publish.sh
-dist.tar.gz
