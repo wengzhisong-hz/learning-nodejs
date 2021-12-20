@@ -355,12 +355,72 @@ function addChunk(stream, state, chunk, addToFront) {
 }
 ```
 
-
-
-
-
-
 # 深入理解可写流
+
+### 可写流的状态`Writable._writableState`
+
+可写流同样具有一个全局状态`._writableState`：
+
+```JavaScript
+function Writable(options) {
+  this._writableState = new WritableState(options, this, isDuplex);
+  Stream.call(this, options); 
+}
+
+function WritableState(options, stream, isDuplex) {
+  this.length = 0;
+  // 初始化了内部的buffer状态
+  resetBuffer(this);
+}
+
+function resetBuffer(state) {
+  state.buffered = [];
+  state.bufferedIndex = 0;
+  state.allBuffers = true;
+  state.allNoop = true;
+}
+
+```
+
+### 手动写入数据`Writable.write()`
+
+`.write()`方法用于向底层写入指定大小的数据块（通过调用`._wirte()`方法）：
+
+```JavaScript
+Writable.prototype.write = function(chunk, encoding, cb) {
+  return _write(this, chunk, encoding, cb) === true;
+};
+
+function _write(stream, chunk, encoding, cb) {
+  const state = stream._writableState;
+  return writeOrBuffer(stream, state, chunk, encoding, cb);
+}
+
+function writeOrBuffer(stream, state, chunk, encoding, callback) {
+  const len = state.objectMode ? 1 : chunk.length;
+
+  state.length += len;
+  const ret = state.length < state.highWaterMark;
+  // 如果可写流中state.buffer的长度小于writableHighWaterMark的长度
+  // 则可以触发'drain'事件
+  if (!ret)
+    state.needDrain = true;
+
+  // 如果现在正在向state.buffer中写入数据
+  // 或者处于错误、构造状态
+  // 或者是批量小块数据处理完毕
+  // 则将当前要写入state.buffer中的buffer推送到state.buffered队列中等待写入
+  if (state.writing || state.corked || state.errored || !state.constructed) {
+    state.buffered.push({ chunk, encoding, callback });
+  } else {
+    // 直接调用子类提供的_wirte方法，写入数据
+    stream._write(chunk, encoding, state.onwrite);
+  }
+  return ret && !state.errored && !state.destroyed;
+}
+```
+
+自动调用可写流的`.write()`方法，在深入理解可读流部分，我们已经解析过了，可写流作为参数传入可读流的`.pipe()`方法，并在`.pipe()`方法内部进行调用，从而实现自动写入数据。
 
 # Node.js中流的应用
 
