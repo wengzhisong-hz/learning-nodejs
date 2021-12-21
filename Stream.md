@@ -3,13 +3,12 @@
 ## 核心API
 
 - Stream类
-	- `.pipe()`
 	- stream.Writable类
+		- `.pipe()`
 		- `.write()`
 		- `._write()`
 		- `.writableHighWaterMark`
 	- stream.Readable类
-		- `.pipe()`
 		- `.read()`
 		- `._read()`
 		- `.readableHighWaterMark`
@@ -113,7 +112,7 @@ function ReadableState(options, stream, isDuplex) {
 
 任何Readable流，一定处于这三种状态之间：
 
-- `readable.readableFlowing === null` 
+- `readable.readableFlowing === null`
 	- 初始化阶段
 - `readable.readableFlowing === false`
 	- 消费流数据暂停
@@ -234,7 +233,7 @@ function flow(stream) {
 ```
 
 
-## 向可读流提供数据`readable._read()`
+## 底层向可读流提供数据`readable._read()`
 
 可读流子类需要实现`_read()`方法来向可读流提供数据：
 
@@ -311,7 +310,7 @@ ReadStream.prototype._read = function(n) {
         }
         // 在_read()方法中，最终调用了this.push()方法
         // 向._readableState.buffer中写入数据
-        // 并触发data时间
+        // 并触发data事件
         this.push(buf);
       } else {
         this.push(null);
@@ -355,6 +354,7 @@ function addChunk(stream, state, chunk, addToFront) {
 }
 ```
 
+
 # 深入理解可写流
 
 ### 可写流的状态`Writable._writableState`
@@ -381,6 +381,7 @@ function resetBuffer(state) {
 }
 
 ```
+
 
 ### 手动写入数据`Writable.write()`
 
@@ -420,11 +421,62 @@ function writeOrBuffer(stream, state, chunk, encoding, callback) {
 }
 ```
 
+
 自动调用可写流的`.write()`方法，在深入理解可读流部分，我们已经解析过了，可写流作为参数传入可读流的`.pipe()`方法，并在`.pipe()`方法内部进行调用，从而实现自动写入数据。
 
-# Node.js中流的应用
+### 底层消费可写流数据`writable._wirte()` 、`writable._wirtev()`
+
+上面提到在`Writable.write()`方法中会调用子类实现的`writable._wirte()`、`writable._wirtev()`方法。
+
+```JavaScript
+Writable.prototype._write = function(chunk, encoding, cb) {
+  if (this._writev) {
+    this._writev([{ chunk, encoding }], cb);
+  } else {
+    throw new ERR_METHOD_NOT_IMPLEMENTED('_write()');
+  }
+};
+```
 
 
+### 例：fs模块中实现`_write()`、`writable._wirtev()`方法
 
+在fs模块中，分别实现了`_write()`方法和`_writev()`方法来消费可写流数据:
 
+```JavaScript
+const fs = require('fs');
+const kFs = Symbol('kFs');
 
+function ReadStream(path, options) {
+
+  this[kFs] = options.fs || fs;
+  
+}
+
+WriteStream.prototype._write = function(data, encoding, cb) {
+  
+  // 调用了fs.write方法，将字符串数据写入到指定目标中
+  this[kFs].write(this.fd, data, 0, data.length, this.pos, (er, bytes) => {
+    
+    cb();
+    
+  });
+};
+
+WriteStream.prototype._writev = function(data, cb) {
+  const len = data.length;
+  const chunks = new Array(len);
+  let size = 0;
+  for (let i = 0; i < len; i++) {
+    const chunk = data[i].chunk;
+    chunks[i] = chunk;
+    size += chunk.length;
+  }
+
+  // 调用了fs.writev方法，将buffer数据写入到指定目标中
+  this[kFs].writev(this.fd, chunks, this.pos, (er, bytes) => {
+    
+    cb();
+  });
+};
+```
