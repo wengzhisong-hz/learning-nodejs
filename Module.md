@@ -72,7 +72,7 @@ Module.prototype.require = function(id) {
 2. 尝试从node内置模块中获取
 3. 调用`Module.load()`方法来加载模块
 
-```
+```JavaScript
 Module._load = function(request, parent, isMain) {
   let relResolveCacheIdentifier;
   
@@ -188,7 +188,7 @@ Module._load = function(request, parent, isMain) {
 2. 获取模块的最长扩展名
 3. 根据模块扩展名调用对应的模块加载器
 
-```
+```JavaScript
 Module.prototype.load = function(filename) {
 
   assert(!this.loaded);
@@ -215,7 +215,7 @@ Module.prototype.load = function(filename) {
 
 以json加载器为例：
 
-```
+```JavaScript
 Module._extensions['.json'] = function(module, filename) {
   // 调用fs模块同步读取
   const content = fs.readFileSync(filename, 'utf8');
@@ -239,8 +239,8 @@ Module._extensions['.json'] = function(module, filename) {
 
 Node.js 官网上给出如下的伪代码：
 
-```
- require(X) from module at path Y
+```Bash
+require(X) from module at path Y
 1. If X is a core module,
    a. return the core module
    b. STOP
