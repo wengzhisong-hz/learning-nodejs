@@ -2,6 +2,8 @@
 
 [进程、线程、协程](Process.md)
 
+[内存管理](Memory.md)
+
 ## node 源码解读
 
 node版本：v17
