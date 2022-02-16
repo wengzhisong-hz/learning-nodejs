@@ -4,8 +4,6 @@
 
 ![](https://pic3.zhimg.com/80/v2-b92499b17ed11bc279689ecdb6efb4b6_720w.jpg "")
 
-[https://zhuanlan.zhihu.com/p/183238194](https://zhuanlan.zhihu.com/p/183238194)
-
 ## 文件的使用
 
 ![](https://pic1.zhimg.com/80/v2-bb6dc369fbf16afbdb088c6c7c26d9cc_1440w.jpg "")
