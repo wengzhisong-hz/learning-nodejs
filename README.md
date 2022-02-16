@@ -4,6 +4,12 @@
 
 [内存管理](Memory.md)
 
+[文件系统](File.md)
+
+[死锁](Deadlock.md)
+
+[IO](IO.md)
+
 ## node 源码解读
 
 node版本：v17
