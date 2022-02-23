@@ -1,8 +1,13 @@
-# Module
+# module
 
-Node.js现在支持cjs与esm。
+## 核心API
+
+- `module.exports`
+- `require()`
 
 ## Module类
+
+Node.js现在支持cjs与esm。
 
 ```JavaScript
 const moduleParentCache = new SafeWeakMap();
@@ -41,6 +46,7 @@ Module._extensions = ObjectCreate(null);
 
 ```
 
+
 ### 导入模块：`Module.require()`
 
 导入模块的方法`require()`会调用`Module_load()`方法：
@@ -64,6 +70,7 @@ Module.prototype.require = function(id) {
 
 ```
 
+
 ### 主要逻辑
 
 `Module_load()`方法会按照如下步骤进行解析：
@@ -72,7 +79,7 @@ Module.prototype.require = function(id) {
 2. 尝试从node内置模块中获取
 3. 调用`Module.load()`方法来加载模块
 
-```JavaScript
+```
 Module._load = function(request, parent, isMain) {
   let relResolveCacheIdentifier;
   
@@ -180,6 +187,7 @@ Module._load = function(request, parent, isMain) {
 };
 ```
 
+
 ### 第一次导入
 
 `Module.load()`做了如下几件事：
@@ -188,7 +196,7 @@ Module._load = function(request, parent, isMain) {
 2. 获取模块的最长扩展名
 3. 根据模块扩展名调用对应的模块加载器
 
-```JavaScript
+```
 Module.prototype.load = function(filename) {
 
   assert(!this.loaded);
@@ -211,11 +219,12 @@ Module.prototype.load = function(filename) {
 };
 ```
 
+
 ### 模块加载器
 
 以json加载器为例：
 
-```JavaScript
+```
 Module._extensions['.json'] = function(module, filename) {
   // 调用fs模块同步读取
   const content = fs.readFileSync(filename, 'utf8');
@@ -235,12 +244,13 @@ Module._extensions['.json'] = function(module, filename) {
 };
 ```
 
+
 ## 模块加载顺序
 
 Node.js 官网上给出如下的伪代码：
 
-```Bash
-require(X) from module at path Y
+```JavaScript
+ require(X) from module at path Y
 1. If X is a core module,
    a. return the core module
    b. STOP
@@ -337,7 +347,10 @@ RESOLVE_ESM_MATCH(MATCH)
 5. THROW "not found"
 ```
 
+
 ## 循环引用问题
 
 由于javascript是一门解释型语言，只有在运行时才能知道真正的变量状态，模块的导入导出以实际运行时的状态为准。
+
+
 

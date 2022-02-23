@@ -1,4 +1,4 @@
-# Buffer
+# buffer
 
 ## 核心API
 
@@ -15,7 +15,7 @@
 > `ArrayBuffer`对象作为内存区域，可以存放多种类型的数据。同一段内存，不同数据有不同的解读方式，这就叫做“视图”（view）。`ArrayBuffer`有两种视图，一种是`TypedArray`视图，另一种是`DataView`视图。前者的数组成员都是同一个数据类型，后者的数组成员可以是不同的数据类型。
 
 
-> 目前，`TypedArray`视图一共包括 9 种类型，每一种视图都是一种构造函数：`Int8Array、Uint8Array、Uint8ClampedArray、Int16Array、Uint16Array、Int32Array、Uint32Array、Float32Array、Float64Array` 。
+> 目前，`TypedArray`视图一共包括 9 种类型，每一种视图都是一种构造函数：**`Int8Array、Uint8Array、Uint8ClampedArray、Int16Array、Uint16Array、Int32Array、Uint32Array、Float32Array、Float64Array`** 。
 
 
 从Node的代码来看，`Buffer` 继承自 `Uint8Array`:
@@ -24,9 +24,6 @@
 // internal/buffer.js
 
 class FastBuffer extends Uint8Array {
-  // Using an explicit constructor here is necessary to avoid relying on
-  // `Array.prototype[Symbol.iterator]`, which can be mutated by users.
-  // eslint-disable-next-line no-useless-constructor
   constructor(bufferOrLength, byteOffset, length) {
     super(bufferOrLength, byteOffset, length);
   }
@@ -40,22 +37,22 @@ Buffer.prototype = FastBuffer.prototype;
 
 ## 与cache的区别
 
-> cache 是为了弥补高速设备和低速设备的鸿沟而引入的中间层，最终起到**加快访问速度** 的作用。
+> cache 是为了弥补高速设备和低速设备的鸿沟而引入的中间层，最终起到**加快访问速度**的作用。
 
 
-> 而 buffer 的主要目的进行流量整形，把突发的大数量较小规模的 I/O 整理成平稳的小数量较大规模的 I/O，以**减少响应次数** 
+> 而 buffer 的主要目的进行流量整形，把突发的大数量较小规模的 I/O 整理成平稳的小数量较大规模的 I/O，以**减少响应次数**
 
 
 ## 内存分配
 
-> Buffer的内存不是由V8 分配，而是在Node的C++ 层面完成申请，在JavaScript中进行内存分配。这部分内存成为**堆外内存** ，最终被V8 的垃圾回收标记所回收。
+> Buffer的内存不是由V8 分配，而是在Node的C++ 层面完成申请，在JavaScript中进行内存分配。这部分内存成为**堆外内存**，最终被V8 的垃圾回收标记所回收。
 
 
-Node.js 采用了 slab 机制进行**预先申请、事后分配** ，是一种动态的管理机制。
+Node.js 采用了 slab 机制进行**预先申请、事后分配**，是一种动态的管理机制。
 
 ### 主要过程
 
-#### **初始化8kb内存空间** ：
+#### **初始化8kb内存空间**：
 
 ```JavaScript
 Buffer.poolSize = 8 * 1024;
@@ -88,7 +85,7 @@ function createUnsafeBuffer(size) {
 ```
 
 
-#### **alloc()** **无论buffer大小，直接创建一个FastBuffer：** 
+#### `**alloc()**`**无论buffer大小，直接创建一个FastBuffer：**
 
 ```JavaScript
 Buffer.alloc = function alloc(size, fill, encoding) {
@@ -105,7 +102,7 @@ Buffer.alloc = function alloc(size, fill, encoding) {
 ```
 
 
-#### `allocUnsafe()`**会根据size大小走不同的分配方式：** 
+#### **`allocUnsafe()`****会根据size大小走不同的分配方式：**
 
 ```JavaScript
 Buffer.allocUnsafe = function allocUnsafe(size) {

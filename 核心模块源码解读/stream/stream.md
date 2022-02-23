@@ -1,4 +1,4 @@
-# Stream
+# stream
 
 ## 核心API
 
@@ -24,7 +24,7 @@
 
 流是一个实现了观察者模式的类，继承了流的子类，用于处理大量buffer或js对象的读、写。
 
-流的实现依赖于[Events](https://www.wolai.com/gqCmhxVm2DHXK217Pw53xS)模块的EventEmitter。
+流的实现依赖于[events](https://www.wolai.com/gqCmhxVm2DHXK217Pw53xS)模块的EventEmitter。
 
 ### 可读流
 
@@ -112,7 +112,7 @@ function ReadableState(options, stream, isDuplex) {
 
 任何Readable流，一定处于这三种状态之间：
 
-- `readable.readableFlowing === null`
+- `readable.readableFlowing === null` 
 	- 初始化阶段
 - `readable.readableFlowing === false`
 	- 消费流数据暂停
@@ -480,3 +480,5 @@ WriteStream.prototype._writev = function(data, cb) {
   });
 };
 ```
+
+

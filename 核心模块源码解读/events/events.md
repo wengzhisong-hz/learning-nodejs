@@ -1,4 +1,4 @@
-# Events
+# events
 
 Node.js中大多数的模块都依赖于events模块。比如buffer、stream、http、fs。我们在koa等框架中也能看见events的身影。
 
