@@ -10,11 +10,9 @@
 
 ## 在线阅读
 
-强烈推荐使用`wolai`在线阅读！！！
+[NodeJS进阶](https://www.wolai.com/o971owNmXWpCe8dFYfij3T)
 
-`wolai`注册邀请码：`EKCBYZM`。
-
-[https://www.wolai.com/o971owNmXWpCe8dFYfij3T](https://www.wolai.com/o971owNmXWpCe8dFYfij3T)
+如果你也想使用`wolai`，可以使用我的注册邀请码：`EKCBYZM`。
 
 ## 目录
 
