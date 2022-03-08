@@ -3,12 +3,12 @@
 ## 核心API
 
 - Buffer类
-	- alloc()
-	- allocUnsafe()
-	- concat()
-	- from()
-	- poolSize
-	- fill()
+	- `alloc()`
+	- `allocUnsafe()`
+	- `concat()`
+	- `from()`
+	- `poolSize`
+	- `fill()`
 
 ## 与ArrayBuffer的区别
 
