@@ -6,5 +6,9 @@
 
 [cluster](cluster/cluster.md)
 
+[v8](v8/v8.md)
+
+[c++插件](c++%E6%8F%92%E4%BB%B6/c++%E6%8F%92%E4%BB%B6.md)
+
 
 

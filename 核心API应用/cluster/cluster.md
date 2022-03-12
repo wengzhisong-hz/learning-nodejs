@@ -78,3 +78,5 @@ const server = net.createServer((socket) => {
 
 一般遵循one process per container原则。如果说docker中进程挂了，交由docker重启即可。无需再引入pm2做进程管理。
 
+
+
