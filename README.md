@@ -4,7 +4,7 @@
 
 下面所有文章都基于node `v16.14.0`版本，内容包括：
 
-- node源码分析（js部分）
+- node源码分析
 - node API使用要点
 - 常见库、框架的实践
 
@@ -13,6 +13,10 @@
 [NodeJS进阶](https://www.wolai.com/o971owNmXWpCe8dFYfij3T)
 
 如果你也想使用`wolai`，可以使用我的注册邀请码：`EKCBYZM`。
+
+欢迎star我的github博客项目：
+
+[https://github.com/wengzhisong-hz/learning-nodejs](https://github.com/wengzhisong-hz/learning-nodejs)
 
 ## 目录
 
