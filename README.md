@@ -2,11 +2,13 @@
 
 ## 前言
 
-下面所有文章都基于node `v16.14.0`版本，内容包括：
+本教程所有文章都基于node `v16.14.0`版本，内容包括：
 
-- node源码分析
-- node API使用要点
+- nodejs源码分析
+- nodejs API使用要点
 - 常见库、框架的实践
+
+nodejs的源码分析，以源码为主，删去部分不重要的代码，辅以少量的的注释说明，做到调用顺序、代码结构清晰，抓住主干，容易理解。
 
 ## 在线阅读
 
@@ -14,9 +16,19 @@
 
 如果你也想使用`wolai`，可以使用我的注册邀请码：`EKCBYZM`。
 
-欢迎star我的github博客项目：
+## 捐赠
+
+如果您觉得我写的不错，
+
+欢迎star ⭐️ 我的github博客项目：
 
 [https://github.com/wengzhisong-hz/learning-nodejs](https://github.com/wengzhisong-hz/learning-nodejs)
+
+也可以请我喝一杯咖啡 ☕️：
+
+![](image/1451647159136_.pic.jpg "")
+
+![](image/1461647159155_.pic.jpg "")
 
 ## 目录
 
@@ -32,7 +44,9 @@
 
 [中间件](%E4%B8%AD%E9%97%B4%E4%BB%B6/%E4%B8%AD%E9%97%B4%E4%BB%B6.md)
 
-[实战案例](%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B/%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B.md)
+[微服务](%E5%BE%AE%E6%9C%8D%E5%8A%A1/%E5%BE%AE%E6%9C%8D%E5%8A%A1.md)
+
+[案例](%E6%A1%88%E4%BE%8B/%E6%A1%88%E4%BE%8B.md)
 
 
 

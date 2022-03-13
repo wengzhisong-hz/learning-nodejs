@@ -1,8 +1,6 @@
-# node初始化过程
+# node初始化过程(c++部分)
 
-## c++部分
-
-### 1. 判断操作系统
+## 1. 判断操作系统
 
 node会先判断运行环境，以unix为例，node会调用`node.cc`下命名空间为`node`的`Start()`方法以初始化node：
 
@@ -46,7 +44,7 @@ int Start(int argc, char** argv) {
 ```
 
 
-### 2. 初始化v8实例
+## 2. 初始化v8实例
 
 初始化v8实例的时候，会先初始化node的 c++模块环境，再初始化一个v8实例：
 
@@ -83,7 +81,7 @@ InitializationResult InitializeOncePerProcess(
 ```
 
 
-#### 2.1 初始化node环境
+### 2.1 初始化node环境
 
 初始化node环境会调用`RegisterBuiltinModules()`方法：
 
@@ -123,11 +121,13 @@ void RegisterBuiltinModules() {
 ```
 
 
-#### 2.2 初始化v8实例
+### 2.2 初始化v8实例
 
-比较复杂，略过 :) 
+关于`isolate` 、`context`、`handle`、`handleScope`概念可以参考[v8的一些概念](https://www.wolai.com/sGAwQgZ41FA6MbnrozwkFD)。
 
-### 3. 运行node实例
+整个初始化过程比较复杂，略过 :) 
+
+## 3. 运行node实例
 
 `main_instance.Run()` 会进行三个主要步骤：
 
@@ -164,7 +164,7 @@ void NodeMainInstance::Run(int* exit_code, Environment* env) {
 ```
 
 
-#### 3.1创建node执行环境
+### 3.1创建node执行环境
 
 `CreateMainEnvironment`会跟新env，并调用`RunBootstrapping()`方法：
 
@@ -221,15 +221,32 @@ MaybeLocal<Value> Environment::RunBootstrapping() {
 ```
 
 
-#### 3.2 加载 primordials.js & loaders.js
+### 3.2 加载 primordials.js & loaders.js
 
-`BootstrapInternalLoaders()`借用`ExecuteBootstrapper()`方法的能力，最终会加载经过v8解析包装之后的`primordials.js` & `loaders.js`:
+`BootstrapInternalLoaders()`借用`ExecuteBootstrapper()`方法的能力，最终会加载经过v8解析包装之后的`primordials.js` & `loaders.js`，详细加载的过程见[node初始化过程(js部分)](https://www.wolai.com/76A3JrMuKaYEZeVSKhujyt)，下面我们来看c++部分逻辑：
 
 ```C++
 MaybeLocal<Value> Environment::BootstrapInternalLoaders() {
-  
+
+  // 初始化 getLinkedBinding getInternalBinding
+  // 加载 primordials.js
   // 通过 ExecuteBootstrapper 来执行 internal/bootstrap/loaders.js 文件
-  // loader.js中做了什么在js部分详细讲
+  
+  std::vector<Local<String>> loaders_params = {
+      process_string(),
+      FIXED_ONE_BYTE_STRING(isolate_, "getLinkedBinding"),
+      FIXED_ONE_BYTE_STRING(isolate_, "getInternalBinding"),
+      primordials_string()};
+  std::vector<Local<Value>> loaders_args = {
+      process_object(),
+      NewFunctionTemplate(binding::GetLinkedBinding)
+          ->GetFunction(context())
+          .ToLocalChecked(),
+      NewFunctionTemplate(binding::GetInternalBinding)
+          ->GetFunction(context())
+          .ToLocalChecked(),
+      primordials()};
+  
   Local<Value> loader_exports;
   if (!ExecuteBootstrapper(
            this, "internal/bootstrap/loaders", &loaders_params, &loaders_args)
@@ -241,7 +258,7 @@ MaybeLocal<Value> Environment::BootstrapInternalLoaders() {
 ```
 
 
-#### 3.3 加载 node.js
+### 3.3 加载 node.js
 
 同样，在`BootstrapNode()`方法中也有类似操作：
 
@@ -271,7 +288,7 @@ MaybeLocal<Value> Environment::BootstrapNode() {
 ```
 
 
-#### 3.4 ExecuteBootstrapper
+### 3.4 ExecuteBootstrapper
 
 c++调用js的重要方法就是`ExecuteBootstrapper()`，虽然调用的过程非常的复杂，我们仍然能通过几段代码稍微窥视到一些重要步骤：
 
@@ -326,7 +343,7 @@ MaybeLocal<v8::Value> Function::Call(Local<Context> context,
 ```
 
 
-#### 3.5 加载node执行环境 
+### 3.5 加载node执行环境 
 
 当node执行环境创建完之后，
 
@@ -405,7 +422,7 @@ MaybeLocal<Value> StartExecution(Environment* env, StartExecutionCallback cb) {
 ```
 
 
-#### 3.6开启libuv事件循环
+### 3.6开启libuv事件循环
 
 当所有的js环境（内置模块、主进程、线程）都准备好之后，nodejs会开启libuv事件循环，其核心逻辑是一个`do - while` 循环。
 
@@ -440,7 +457,7 @@ static int uv__loop_alive(const uv_loop_t* loop) {
 ```
 
 
-#### 3.7 libuv 事件循环过程
+### 3.7 libuv 事件循环过程
 
 我们看看`uv_run()`方法：
 
@@ -495,9 +512,20 @@ int uv_run(uv_loop_t* loop, uv_run_mode mode) {
 
 至于每一步具体做了些什么，还有待对libuv的更进一步学习。
 
-## js部分
+## 总结
 
+node初始化的过程如下：
 
+1. 初始化一个v8的`isolate`
+2. 初始化`src` 下node所需的c++内建模块
+3. 初始化`isolate`中的`context`
+4. 初始化js部分，参考[node初始化过程(js部分)](https://www.wolai.com/76A3JrMuKaYEZeVSKhujyt)
+	1. 将`primordials`代理到js原生方法上
+	2. 加载c++的内建模块，并提供js方法`internalBinding()`方法来访问这些模块
+	3. 初始化`require()` 方法，用于加载内建的js模块
+	4. 初始化进程和线程
+	5. 预加载一些模块
+5. 开启并进入libuv事件循环
 
 
 
