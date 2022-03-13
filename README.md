@@ -16,20 +16,6 @@ nodejs的源码分析，以源码为主，删去部分不重要的代码，辅�
 
 如果你也想使用`wolai`，可以使用我的注册邀请码：`EKCBYZM`。
 
-## 捐赠
-
-如果您觉得我写的不错，
-
-欢迎star ⭐️ 我的github博客项目：
-
-[https://github.com/wengzhisong-hz/learning-nodejs](https://github.com/wengzhisong-hz/learning-nodejs)
-
-也可以请我喝一杯咖啡 ☕️：
-
-![](image/1451647159136_.pic.jpg "")
-
-![](image/1461647159155_.pic.jpg "")
-
 ## 目录
 
 [基础知识](%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.md)
@@ -48,5 +34,15 @@ nodejs的源码分析，以源码为主，删去部分不重要的代码，辅�
 
 [案例](%E6%A1%88%E4%BE%8B/%E6%A1%88%E4%BE%8B.md)
 
+## 捐赠
 
+如果您觉得我写的不错，
+
+欢迎star 我的github博客项目：
+
+[https://github.com/wengzhisong-hz/learning-nodejs](https://github.com/wengzhisong-hz/learning-nodejs)
+
+也可以请我喝一杯咖啡 ☕️：
+
+![](image/image.png "")
 
