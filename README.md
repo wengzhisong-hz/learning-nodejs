@@ -12,7 +12,7 @@ nodejs的源码分析，以源码为主，删去部分不重要的代码，辅�
 
 ## 在线阅读
 
-[NodeJS进阶](https://www.wolai.com/o971owNmXWpCe8dFYfij3T)
+地址：[NodeJS进阶](https://www.wolai.com/o971owNmXWpCe8dFYfij3T)
 
 如果你也想使用`wolai`，可以使用我的注册邀请码：`EKCBYZM`。
 
@@ -23,8 +23,6 @@ nodejs的源码分析，以源码为主，删去部分不重要的代码，辅�
 [核心模块源码解读](%E6%A0%B8%E5%BF%83%E6%A8%A1%E5%9D%97%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/%E6%A0%B8%E5%BF%83%E6%A8%A1%E5%9D%97%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB.md)
 
 [核心API应用](%E6%A0%B8%E5%BF%83API%E5%BA%94%E7%94%A8/%E6%A0%B8%E5%BF%83API%E5%BA%94%E7%94%A8.md)
-
-[数据库](%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93.md)
 
 [框架](%E6%A1%86%E6%9E%B6/%E6%A1%86%E6%9E%B6.md)
 
@@ -38,7 +36,7 @@ nodejs的源码分析，以源码为主，删去部分不重要的代码，辅�
 
 如果您觉得我写的不错，
 
-欢迎star 我的github博客项目：
+欢迎star我的github博客项目：
 
 [https://github.com/wengzhisong-hz/learning-nodejs](https://github.com/wengzhisong-hz/learning-nodejs)
 
