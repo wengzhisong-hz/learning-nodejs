@@ -7,7 +7,7 @@
 | ✅ [node 基本架构](基础知识/node基本架构.md)                        | ✅ [events](源码解读/events.md)                                 | ✅ [文件操作](常见需求/文件操作.md)                    |
 | ✅ [v8 的一些概念](基础知识/v8的一些概念.md)                        | ✅ [buffer](源码解读/buffer.md)                                 | [进程操作](常见需求/进程操作.md)                       |
 | [事件循环](基础知识/事件循环.md)                                    | ✅ [stream](源码解读/stream.md)                                 | ✅ [cluster 的负载均衡](常见需求/cluster的负载均衡.md) |
-| ✅ [垃圾回收：基本概念](基础知识/垃圾回收：基本概念.md)             | ✅ [module](源码解读/module.md)                                 | ✍️ [c++插件](常见需求/c++插件.md)                      |
+| ✅ [垃圾回收：基本概念](基础知识/垃圾回收：基本概念.md)             | ✅ [module](源码解读/module.md)                                 | ✍️ [c++插件入门](常见需求/c++插件入门.md)              |
 | ✅ [垃圾回收：常见回收算法](基础知识/垃圾回收：常见回收算法.md)     | ✅ [process、child_process](源码解读/process、child_process.md) |                                                        |
 | ✅ [垃圾回收：v8 的实现](基础知识/垃圾回收：v8的实现.md)            | ✅ [cluster](源码解读/cluster.md)                               |                                                        |
 | ✅ [node 初始化过程 c++部分](<基础知识/node初始化过程(c++部分).md>) |                                                                 |                                                        |
