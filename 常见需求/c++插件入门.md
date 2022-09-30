@@ -1,14 +1,14 @@
 # c++插件入门
 
-## 加载c++插件
+## 加载 c++插件
 
-nodejs c++插件是用c++编写的动态链接库。
+nodejs c++插件是用 c++编写的动态链接库。
 
-nodejs通过`require()`函数将插件加载为普通的nodejs模块：
+nodejs 通过`require()`函数将插件加载为普通的 nodejs 模块：
 
 ```js
 // Native extension for .node
-Module._extensions['.node'] = function(module, filename) {
+Module._extensions[".node"] = function (module, filename) {
   if (policy?.manifest) {
     const content = fs.readFileSync(filename);
     const moduleURL = pathToFileURL(filename);
@@ -19,19 +19,19 @@ Module._extensions['.node'] = function(module, filename) {
 };
 ```
 
-而`process.dlopen`则是nodejs的bootstrap阶段初始化的：
+而`process.dlopen`则是 nodejs 的 bootstrap 阶段初始化的：
 
 ```js
-const rawMethods = internalBinding('process_methods');
+const rawMethods = internalBinding("process_methods");
 
 {
   process.dlopen = rawMethods.dlopen;
-  
+
   // 初始化其他方法...
 }
 ```
 
-在`InitializeProcessMethods`方法中，将`binding::DLOpen`绑定到了process的`dlopen`方法上:
+在`InitializeProcessMethods`方法中，将`binding::DLOpen`绑定到了 process 的`dlopen`方法上:
 
 ```c++
 static void InitializeProcessMethods(Local<Object> target,
@@ -39,49 +39,47 @@ static void InitializeProcessMethods(Local<Object> target,
                                      Local<Context> context,
                                      void* priv) {
   Environment* env = Environment::GetCurrent(context);
-  
+
   env->SetMethod(target, "dlopen", binding::DLOpen);
 }
 ```
 
-最后，我们可以在`node_binding.cc`通过`DLOpen`看到nodejs是如何加载c++插件的：
-
-
+最后，我们可以在`node_binding.cc`通过`DLOpen`看到 nodejs 是如何加载 c++插件的：
 
 ```c++
 void DLOpen(const FunctionCallbackInfo<Value>& args) {
-  
+
   // FunctionCallbackInfo<> 用于描述callback的上下文信息
   // .node模块作为参数传入DLOpen
-  
+
   Environment* env = Environment::GetCurrent(args);
   auto context = env->context();
 
   Local<Object> module;
   Local<Object> exports;
   Local<Value> exports_v;
-  
+
   if (
       // ToObject 用于生成js url对象
     	// 此处生成了名为 module 的 js url
       !args[0]->ToObject(context).ToLocal(&module) ||
-      
+
       // 生成module的exports
       !module->Get(context, env->exports_string()).ToLocal(&exports_v) ||
-    
+
       !exports_v->ToObject(context).ToLocal(&exports)) {
     return;
   }
 
   node::Utf8Value filename(env->isolate(), args[1]);
-  
+
   // 加载插件
   // DLib 类通过libuv的uv_dlopen方法加载动态链接库
   env->TryLoadAddon(*filename, flags, [&](DLib* dlib) {
     static Mutex dlib_load_mutex;
     Mutex::ScopedLock lock(dlib_load_mutex);
-		
-    
+
+
     // 此处调用了最终 uv_dlopen()加载链接库
     // 加载结果会存储到 dlib->handle_中
     const bool is_opened = dlib->Open();
@@ -103,7 +101,7 @@ void DLOpen(const FunctionCallbackInfo<Value>& args) {
     node_module* mp = thread_local_modpending;
     thread_local_modpending = nullptr;
 
-    
+
 
     if (mp != nullptr) {
       mp->nm_dso_handle = dlib->handle_;
@@ -113,7 +111,7 @@ void DLOpen(const FunctionCallbackInfo<Value>& args) {
 
 		// napi方式注册的插件
     if ((mp->nm_version != -1) && (mp->nm_version != NODE_MODULE_VERSION)) {
-      
+
       if (auto callback = GetInitializerCallback(dlib)) {
         callback(exports, module, context);
         return true;
@@ -139,7 +137,7 @@ void DLOpen(const FunctionCallbackInfo<Value>& args) {
 
 ## 环境准备
 
-编译插件我们会用到`node-gyp`，这是一个nodejs用于c++插件跨平台编译的工具。`node-gyp`不是用来构建nodejs的。`node-gyp`支持编译多个node版本的插件，如：0.8, ... , 4, 5, 6, 等版本。
+编译插件我们会用到`node-gyp`，这是一个 nodejs 用于 c++插件跨平台编译的工具。`node-gyp`不是用来构建 nodejs 的。`node-gyp`支持编译多个 node 版本的插件，如：0.8, ... , 4, 5, 6, 等版本。
 
 ### 安装`node-gyp`
 
@@ -147,35 +145,35 @@ void DLOpen(const FunctionCallbackInfo<Value>& args) {
 npm install -g node-gyp
 ```
 
-如果unix环境，还需要：
+如果 unix 环境，还需要：
 
-- Python (v3.7, v3.8, v3.9, 或v3.10)
+- Python (v3.7, v3.8, v3.9, 或 v3.10)
 - `make`
 - c/c++ 编译环境，如`gcc`
 
-如果是mac，则需要：
+如果是 mac，则需要：
 
-- Python (v3.7, v3.8, v3.9, 或v3.10)
+- Python (v3.7, v3.8, v3.9, 或 v3.10)
 - `XCode Command Line Tools`（包含了`c/c++`和`make`）
 
-### 设置python依赖
+### 设置 python 依赖
 
-1. 通过命令行调用node-gyp的时候，指定python版本：
+1. 通过命令行调用 node-gyp 的时候，指定 python 版本：
 
 ```bash
 node-gyp <command> --python /path/to/executable/python
 ```
 
-2. 通过npm调用node-gyp，需要通过npm来配置node-gyp的python版本：
+2. 通过 npm 调用 node-gyp，需要通过 npm 来配置 node-gyp 的 python 版本：
 
 ```bash
 npm config set python /path/to/executable/python
 ```
 
-3. 如果在`PATH`变量中有指定python版本的话，这个版本会作为默认python版本
+3. 如果在`PATH`变量中有指定 python 版本的话，这个版本会作为默认 python 版本
 4. 如果设置了`NODE_GYP_FORCE_PYTHON`，那么这个会覆盖以上的设置
 
-## 编译c++插件
+## 编译 c++插件
 
 ### 配置`binding.byp`
 
@@ -186,7 +184,7 @@ npm config set python /path/to/executable/python
   "targets": [
     {
       "target_name": "binding",
-      "sources": [ "src/binding.cc" ]
+      "sources": ["src/binding.cc"]
     }
   ]
 }
@@ -200,7 +198,7 @@ npm config set python /path/to/executable/python
 node-gyp configure
 ```
 
-`configure`指令会搜索当前目录下的`binding.gyp`。在unix下，会生成`Makefile`文件；在windows下，会生成`vcxproj`文件。
+`configure`指令会搜索当前目录下的`binding.gyp`。在 unix 下，会生成`Makefile`文件；在 windows 下，会生成`vcxproj`文件。
 
 ### 编译
 
@@ -214,26 +212,26 @@ node-gyp build --target=v6.2.1 # 编译到指定node版本的插件
 
 `build`命令会生成`.node`链接文件。可以在`build/Debug/`或者`build/Release/`中找到`.node`文件。
 
-## 写一个c++插件
+## 写一个 c++插件
 
 ### 原生：一次编写，到处修改
 
-直接写一个nodejs c++插件，会使用到以下库：
+直接写一个 nodejs c++插件，会使用到以下库：
 
 - `v8`
 - `libuv`
-- nodejs 内置库：位于nodejs源码库`src/`中，常见的如`node::ObjectWrap`类
-- nodejs包含的其他库，如`OpenSSL`
+- nodejs 内置库：位于 nodejs 源码库`src/`中，常见的如`node::ObjectWrap`类
+- nodejs 包含的其他库，如`OpenSSL`
 
-直接写的最大问题是这些库中的类和方法经常有变动。比如编写和编译的时候nodejs版本不同，那么编译很大可能会不通过，我们需要修改代码以匹配当前的nodejs版本，即`一次编写，到处修改`。
+直接写的最大问题是这些库中的类和方法经常有变动。比如编写和编译的时候 nodejs 版本不同，那么编译很大可能会不通过，我们需要修改代码以匹配当前的 nodejs 版本，即`一次编写，到处修改`。
 
-以一个简单的log为例，我们想要实现如下功能：
+以一个简单的 log 为例，我们想要实现如下功能：
 
 ```js
-module.exports = () => 'hello'
+module.exports = () => "hello";
 ```
 
-为了有一个比较良好的编码环境（类型、错误提示等），我们可以先从github上下载一个nodejs源码仓库，然后在`src/`下创建一个`hello.cc`文件：
+为了有一个比较良好的编码环境（类型、错误提示等），我们可以先从 github 上下载一个 nodejs 源码仓库，然后在`src/`下创建一个`hello.cc`文件：
 
 ```c++
 #include <node.h>
@@ -275,7 +273,7 @@ namespace MyAddon
   "targets": [
     {
       "target_name": "myAddon",
-      "sources": [ "hello.cc" ]
+      "sources": ["hello.cc"]
     }
   ]
 }
@@ -291,17 +289,17 @@ console.log(MyAddon.hello()); // hello
 
 ### nan：一次编写，到处编译
 
-nan（Native Abstractions for Node.js）可以将插件源码编译成为不同版本的node插件。nan提供了一些稳定版本的宏定义来替代直接调用`v8`等库。即便是如此，`nan`仍然偏向c++风格，而且同一个插件，如果换了node版本，就需要重新编译一次。
+nan（Native Abstractions for Node.js）可以将插件源码编译成为不同版本的 node 插件。nan 提供了一些稳定版本的宏定义来替代直接调用`v8`等库。即便是如此，`nan`仍然偏向 c++风格，而且同一个插件，如果换了 node 版本，就需要重新编译一次。
 
-#### 安装和配置nan
+#### 安装和配置 nan
 
-首先我们需要安装nan：
+首先我们需要安装 nan：
 
 ```bash
 npm install --save nan
 ```
 
-这会在插件文件夹中创建一个package.json文件。
+这会在插件文件夹中创建一个 package.json 文件。
 
 然后在`binding.gyp`中添加如下配置：
 
@@ -315,7 +313,7 @@ npm install --save nan
 
 #### 插件代码
 
-以nan方式实现log：
+以 nan 方式实现 log：
 
 ```c++
 // hello_nan.cc
@@ -339,7 +337,7 @@ void Init(v8::Local<v8::Object> exports)
 NODE_MODULE(hello, Init)
 ```
 
-安装nan（`npm install --save nan`）：
+安装 nan（`npm install --save nan`）：
 
 ```json
 // package.json
@@ -357,10 +355,8 @@ NODE_MODULE(hello, Init)
   "targets": [
     {
       "target_name": "myAddon",
-      "sources": [ "hello_nan.cc" ],
-      "include_dirs" : [
-        "<!(node -e \"require('nan')\")"
-      ]
+      "sources": ["hello_nan.cc"],
+      "include_dirs": ["<!(node -e \"require('nan')\")"]
     }
   ]
 }
@@ -376,21 +372,17 @@ console.log(MyAddon.hello_nan()); // hello
 
 ### node-api：一次编写，到处使用
 
-在nodejs`8.x`之后，推出基于稳定的ABI（Application Binary Interface）的node-api。这种情况下，低版本的插件，也能够在高版本的nodejs环境中使用（nodejs版本可以向上兼容，向下兼容仍需要写一些适配代码）。
+在 nodejs`8.x`之后，推出基于稳定的 ABI（Application Binary Interface）的 node-api。这种情况下，低版本的插件，也能够在高版本的 nodejs 环境中使用（nodejs 版本可以向上兼容，向下兼容仍需要写一些适配代码）。
 
+node-api 是 c 风格的 api，社区为了便于使用，维护了一个名为`node-addon-api`的 c++风格的包。下面以`node-addon-api`为例，看看如何实现一个基于 node-api 的插件。
 
-
-node-api是c风格的api，社区为了便于使用，维护了一个名为`node-addon-api`的c++风格的包。下面以`node-addon-api`为例，看看如何实现一个基于node-api的插件。
-
-
-
-#### 安装和配置node-addon-api
+#### 安装和配置 node-addon-api
 
 ```bash
 npm install --save node-addon-api
 ```
 
-这会添加一个最新版本的node-addon-api，当然也可以安装指定的版本。
+这会添加一个最新版本的 node-addon-api，当然也可以安装指定的版本。
 
 然后在`binding.gyp`中添加如下配置：
 
@@ -402,29 +394,33 @@ npm install --save node-addon-api
 
 这可以让插件`.cc / .cpp`文件中可以使用`#include "napi.h"`。
 
-然后可以添加开启c++异常处理的配置：
+然后可以添加开启 c++异常处理的配置：
 
 ```json
-"cflags!": [ "-fno-exceptions" ],
-"cflags_cc!": [ "-fno-exceptions" ],
 "conditions": [
-  ["OS=="win"", {
-     "defines": [
-     	"_HAS_EXCEPTIONS=1"
-    ],
-    "msvs_settings": {
-    "VCCLCompilerTool": {
-    	"ExceptionHandling": 1
-    },
-  },
-  }],
-  ["OS=="mac"", {
-     "xcode_settings": {
-       "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
-       "CLANG_CXX_LIBRARY": "libc++",
-       "MACOSX_DEPLOYMENT_TARGET": "10.7",
-     },
-  }],
+  [
+    "OS=='win'",
+    {
+      "defines": [
+        "_HAS_EXCEPTIONS=1"
+      ],
+      "msvs_settings": {
+        "VCCLCompilerTool": {
+          "ExceptionHandling": 1
+        }
+      }
+    }
+  ],
+  [
+    "OS=='mac'",
+    {
+      "xcode_settings": {
+        "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+        "CLANG_CXX_LIBRARY": "libc++",
+        "MACOSX_DEPLOYMENT_TARGET": "10.7"
+      }
+    }
+  ]
 ]
 ```
 
@@ -474,30 +470,32 @@ NODE_API_MODULE(hello, Init)
   "targets": [
     {
       "target_name": "myAddon",
-      "sources": [ "hello_node_api.cc" ],
-      "include_dirs": [
-        "<!(node -p \"require("node-addon-api").include_dir\")"
-      ],
-      "cflags!": [ "-fno-exceptions" ],
-      "cflags_cc!": [ "-fno-exceptions" ],
+      "sources": ["hello_node_api.cc"],
+      "include_dirs": ["<!(node -p \"require('node-addon-api').include_dir\")"],
+      "cflags!": ["-fno-exceptions"],
+      "cflags_cc!": ["-fno-exceptions"],
       "conditions": [
-        ["OS=="win"", {
-          "defines": [
-            "_HAS_EXCEPTIONS=1"
-          ],
-          "msvs_settings": {
-            "VCCLCompilerTool": {
-              "ExceptionHandling": 1
-            },
-          },
-        }],
-        ["OS=="mac"", {
-          "xcode_settings": {
-            "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
-            "CLANG_CXX_LIBRARY": "libc++",
-            "MACOSX_DEPLOYMENT_TARGET": "10.7",
-          },
-        }],
+        [
+          "OS=='win'",
+          {
+            "defines": ["_HAS_EXCEPTIONS=1"],
+            "msvs_settings": {
+              "VCCLCompilerTool": {
+                "ExceptionHandling": 1
+              }
+            }
+          }
+        ],
+        [
+          "OS=='mac'",
+          {
+            "xcode_settings": {
+              "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+              "CLANG_CXX_LIBRARY": "libc++",
+              "MACOSX_DEPLOYMENT_TARGET": "10.7"
+            }
+          }
+        ]
       ]
     }
   ]
@@ -511,24 +509,3 @@ const MyAddon = require("./build/Release/myAddon.node");
 
 console.log(MyAddon.hello_node_api()); // hello
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
