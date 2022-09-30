@@ -405,27 +405,27 @@ npm install --save node-addon-api
 然后可以添加开启c++异常处理的配置：
 
 ```json
-'cflags!': [ '-fno-exceptions' ],
-'cflags_cc!': [ '-fno-exceptions' ],
-'conditions': [
-  ["OS=='win'", {
-    "defines": [
-      "_HAS_EXCEPTIONS=1"
+"cflags!": [ "-fno-exceptions" ],
+"cflags_cc!": [ "-fno-exceptions" ],
+"conditions": [
+  ["OS=="win"", {
+     "defines": [
+     	"_HAS_EXCEPTIONS=1"
     ],
     "msvs_settings": {
-      "VCCLCompilerTool": {
-        "ExceptionHandling": 1
-      },
+    "VCCLCompilerTool": {
+    	"ExceptionHandling": 1
     },
+  },
   }],
-  ["OS=='mac'", {
-    'xcode_settings': {
-      'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
-      'CLANG_CXX_LIBRARY': 'libc++',
-      'MACOSX_DEPLOYMENT_TARGET': '10.7',
-    },
+  ["OS=="mac"", {
+     "xcode_settings": {
+       "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+       "CLANG_CXX_LIBRARY": "libc++",
+       "MACOSX_DEPLOYMENT_TARGET": "10.7",
+     },
   }],
-],
+]
 ```
 
 或者可以禁用它：
@@ -476,12 +476,12 @@ NODE_API_MODULE(hello, Init)
       "target_name": "myAddon",
       "sources": [ "hello_node_api.cc" ],
       "include_dirs": [
-        "<!(node -p \"require('node-addon-api').include_dir\")"
+        "<!(node -p \"require("node-addon-api").include_dir\")"
       ],
-      'cflags!': [ '-fno-exceptions' ],
-      'cflags_cc!': [ '-fno-exceptions' ],
-      'conditions': [
-        ["OS=='win'", {
+      "cflags!": [ "-fno-exceptions" ],
+      "cflags_cc!": [ "-fno-exceptions" ],
+      "conditions": [
+        ["OS=="win"", {
           "defines": [
             "_HAS_EXCEPTIONS=1"
           ],
@@ -491,11 +491,11 @@ NODE_API_MODULE(hello, Init)
             },
           },
         }],
-        ["OS=='mac'", {
-          'xcode_settings': {
-            'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
-            'CLANG_CXX_LIBRARY': 'libc++',
-            'MACOSX_DEPLOYMENT_TARGET': '10.7',
+        ["OS=="mac"", {
+          "xcode_settings": {
+            "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+            "CLANG_CXX_LIBRARY": "libc++",
+            "MACOSX_DEPLOYMENT_TARGET": "10.7",
           },
         }],
       ]
