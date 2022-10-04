@@ -34,7 +34,7 @@ NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)
 
 显然`node-api`是一个c风格的api，写起来略微繁琐。
 
-### `node-addomp-api`示例
+### `node-addonp-api`示例
 
 ```c++
 #include <napi.h>
@@ -199,6 +199,7 @@ class Example : public Napi::ObjectWrap<Example> {};
 
 - 指定返回值类型
 - 获取env
+- 类型转换，类似于c++的`static_cast`
 - 将c++数据转换为`Napi::Value`
 - 判断js数据类型
   - `IsArray`
@@ -256,55 +257,7 @@ Napi::Value BasicModule::fn(const CallbackInfo & info) {
 }
 ```
 
-### 子类的`New()`方法
-
-子类的`New()`方法用于创建包含env的新数据对象。它的第一个参数是`Napi::Env`类型的环境变量，第二个参数每个子类都有所不同，大家可以参考编辑器的提示，或者官方文档。
-
-### 创建供js调用的c++函数
-
-`Napi::Function`用于创建可以供js调用的c++方法。下面是一个简单的创建函数的例子：
-
-```c++
-Napi::Value fn_to_wappered(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
-    return String::New(env, "hello");
-}
-
-Napi::Object init(Napi::Env env, Napi::Object exports) {
-    exports.Set(String::New(env, "fn_wrapped"), Napi::Function::New(env, fn_to_wappered, "fn_wrapped"));
-    return exports;
-}
-
-NODE_API_MODULE(NODE_GYP_MODULE_NAME, Init)
-```
-
-`cpp_fn`打包之后可以直接被js调用：
-
-```js
-const str = addon.fn_wrapped(); // "hello"
-```
-
-#### `Function::New`
-
-`Function::New`接收2～4个参数：
-
-```c++
-static Function Function::New(
-  														// env
-  														 napi_env env,
-  														// c++函数
-                              Callable cb,
-                              // 可选：函数名称
-                              const char *utf8name = nullptr, 
-                              // 可选：执行cb的时候，cb的入参
-                              void *data = nullptr)
-```
-
-### 在c++中调用js函数
-
-
-
-### 其它基础数据类型操作
+### 其他比较重要的操作
 
 > [文档](https://github.com/nodejs/node-addon-api)中有非常详细的说明，这里只做总结
 
@@ -324,10 +277,121 @@ static Function Function::New(
     - `==`
     - `!=`
     - `*`
-  - `[]`对象的随机迭代器
+  - `[]`对象的随机访问迭代器
 - array
   - 是object的子类
   - `Length()`返回数组长度
+
+### 子类的`New()`方法
+
+子类的`New()`方法用于创建包含env的新数据对象。它的第一个参数是`Napi::Env`类型的环境变量，第二个参数每个子类都有所不同，大家可以参考编辑器的提示，或者官方文档。
+
+## 创建供js调用的c++函数
+
+`Napi::Function::New`用于创建可以供js调用的c++方法。下面是一个简单的创建函数的例子：
+
+```c++
+#include <napi.h>
+
+using namespace Napi;
+
+// 供js调用的c++方法
+Napi::Number Method(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  int arg1 = info[0].As<Napi::Number>();
+  int arg2 = info[1].As<Napi::Number>();
+  return Napi::Number::New(env, arg1 + arg2);
+}
+
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  // 将Add方法挂载在node的exports上
+  exports.Set(Napi::String::New(env, "Add"),
+              // New方法包装c++函数
+              Napi::Function::New(env, Method));
+  return exports;
+}
+
+NODE_API_MODULE(addon, Init)
+```
+
+js环境调用上述插件：
+
+```js
+const addon = require('../build/Release/add');
+addon.Add(1, 2) // 3
+```
+
+### `Function::New`
+
+`Function::New`接收2～4个参数：
+
+```c++
+static Function Function::New(
+  // env
+  napi_env env,
+  // c++函数
+  Callable cb,
+  // 可选：函数名称
+  const char *utf8name = nullptr, 
+  // 可选：执行cb的时候，cb的入参
+  void *data = nullptr
+)
+```
+
+## 在c++中调用js函数
+
+`Napi::Function::Call`可以让c++插件调用js传入的回调函数。一个简单的例子如下：
+
+```c++
+#include <napi.h>
+
+using namespace Napi;
+
+void RunJsCallback(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::Function callback = info[0].As<Napi::Function>();
+    Napi::String args = Napi::String::New(env, "message from c++ addon");
+  	// 以数组形式在c++中调用传入的js callback
+    // call方法也接收vector
+    callback.Call({args});
+}
+
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  exports.Set(Napi::String::New(env, "RunJsCallback"),
+              Napi::Function::New(env, RunJsCallback));
+  return exports;
+}
+
+NODE_API_MODULE(addon, Init)
+```
+
+在js环境中：
+
+```js
+const addon = require('../build/Release/demo');
+
+function jsCallback(str) {
+    console.log(str);
+}
+function testBasic()
+{
+    console.log(addon.RunJsCallback(jsCallback)) // message from c++ addon
+}
+```
+
+### `Function::Call`
+
+```c++
+// 接收一个数组
+Napi::Value Napi::Function::Call(const std::initializer_list<napi_value>& args) const;
+
+// 或者是vector
+Napi::Value Napi::Function::Call(const std::vector<napi_value>& args) const;
+```
+
+
+
+
 
 ## 
 
