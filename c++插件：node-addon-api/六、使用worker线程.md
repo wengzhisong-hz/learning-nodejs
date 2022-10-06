@@ -108,7 +108,7 @@ void Napi::AsyncWorker::Queue();
 
 ### `Callback`
 
-`Callback`中引用了传入的js callback，可以在`OnOK`或者`OnError`中直接使用`Callback`。
+`Callback`中引用了传入的js callback，可以在`OnOK`或者`OnError`中直接使用`Callback`。c++给js函数返回的第一个参数是error。
 
 ```c++
 Napi::FunctionReference& Napi::AsyncWorker::Callback();
