@@ -68,7 +68,7 @@ function createWorkerProcess(id, env) {
 ```
 
 
-创建完子进程之后，主进程和子进程之间通过IPC来传递消息和handel。
+创建完子进程之后，主进程和子进程之间通过IPC来传递消息和handle。
 
 ## Work进程
 

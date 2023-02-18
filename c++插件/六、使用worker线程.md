@@ -22,14 +22,14 @@ using namespace Napi;
 class EchoWorker: public AsyncWorker {
 public:
     EchoWorker(Function& callback, std::string& echo): AsyncWorker(callback), echo(echo) {}
-		// 需要覆写基类的Execute，该方法会在eventloop之外，通过libuv再起一个worker线程来执行任务
+        // 需要覆写基类的Execute，该方法会在eventloop之外，通过libuv再起一个worker线程来执行任务
     void Execute() override {
         std::cout << "start in worker thread" << std::endl;
         // 模拟长耗时任务
         std::this_thread::sleep_for(std::chrono::seconds(3));
         std::cout << "after 3 sec, quit worker thread" << std::endl;
     }
-		// 该方法会在Execute方法执行之后被调用
+        // 该方法会在Execute方法执行之后被调用
     void OnOK() override {
         HandleScope scope(Env());
         // AsyncWorker::Callback中存储了js传入的callback
