@@ -40,13 +40,13 @@ Buffer.prototype = FastBuffer.prototype;
 
 ## 内存分配
 
-> Buffer的内存不是由V8 分配，而是在Node的C++ 层面完成申请，在JavaScript中进行内存分配。这部分内存成为**堆外内存**，最终被V8 的垃圾回收标记所回收。
+> Buffer的内存不是由V8 分配，而是在Node的C++ 层面完成申请，在JavaScript中进行内存分配。这部分内存称为**堆外内存**，最终被V8 的垃圾回收机制所回收。
 
 Node.js 采用了 slab 机制进行**预先申请、事后分配**，是一种动态的管理机制。
 
 ### 主要过程
 
-#### **初始化8kb内存空间**：
+#### 初始化8kb内存空间：
 
 ```JavaScript
 Buffer.poolSize = 8 * 1024;
@@ -77,7 +77,7 @@ function createUnsafeBuffer(size) {
 }
 ```
 
-#### `**alloc()**`**无论buffer大小，直接创建一个FastBuffer：**
+#### `alloc()`无论buffer大小，直接创建一个FastBuffer：
 
 ```JavaScript
 Buffer.alloc = function alloc(size, fill, encoding) {
@@ -92,7 +92,7 @@ Buffer.alloc = function alloc(size, fill, encoding) {
 };
 ```
 
-#### **`allocUnsafe()`****会根据size大小走不同的分配方式：**
+#### `allocUnsafe()`会根据size大小走不同的分配方式：
 
 ```JavaScript
 Buffer.allocUnsafe = function allocUnsafe(size) {
