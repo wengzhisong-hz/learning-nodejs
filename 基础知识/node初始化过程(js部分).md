@@ -10,8 +10,7 @@
 // the global proxy, which can be mutated by users.
 ```
 
-
-也就是创建一个全局的代理，nodejs可以通过这个代理来访问js内建的方法，而不用担心这个方法被用户修改过。
+也就是创建一个全局的代理，nodejs可以通过这个代理从js环境访问node内建的c++模块的方法，而不用担心这个方法被用户修改过。
 
 让我们来看一些简单的例子，这里将处理URI的方法直接拷贝到了primordials对象下：
 
@@ -76,7 +75,6 @@ ObjectFreeze(primordials);
 // lib/internal/modules/cjs/loader.js (CommonJS Modules) or
 // lib/internal/modules/esm/* (ES Modules).
 ```
-
 
 `loaders.js`主要是创建node的内建c++模块，并且提供加载内建c++模块的方法。用户则主要是使用cjs或者esm的方式来加载js模块。
 
@@ -263,7 +261,7 @@ require('url');
 
 整个js部分的初始化流程如下：
 
-1. 将`primordials`代理到js原生方法上
+1. 将`primordials`中的js方法代理到node c++内建模块上
 2. 加载c++的内建模块，并提供js方法`internalBinding()`方法来访问这些模块
 3. 初始化`require()` 方法，用于加载内建的js模块
 4. 初始化进程和线程

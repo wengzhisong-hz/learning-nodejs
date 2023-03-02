@@ -495,17 +495,19 @@ int uv_run(uv_loop_t* loop, uv_run_mode mode) {
 
 ![loop_iteration](../assets/loop_iteration.png)
 
-至于每一步具体做了些什么，还有待对 libuv 的更进一步学习。
+至于每一步具体做了些什么，可以参考后面的**libuv源码分析**部分，我做了比较详细的分析。
 
 ## 总结
 
 node 初始化的过程如下：
 
-1. 初始化一个 v8 的`isolate`
+1. 初始化一个 v8 的实例
 2. 初始化`src` 下 node 所需的 c++内建模块
-3. 初始化`isolate`中的`context`
+3. 初始化v8实例中`isolate`的`context`
 4. 初始化 js 部分，参考**node 初始化过程(js 部分)**
    1. 将`primordials`代理到 js 原生方法上
+      1. tip：为什么能用js访问c++？js代码的文本会被v8进行编译。可以认为js是c++模块的高级抽象，在转变为抽象语法树的时候，它就已经是c++对象了。
+      2. 所以primordials本质上可以认为是js中的一个标记，这个标记代表着js在某处调用了c++模块，在编译的时候会被替换
    2. 加载 c++的内建模块，并提供 js 方法`internalBinding()`方法来访问这些模块
    3. 初始化`require()` 方法，用于加载内建的 js 模块
    4. 初始化进程和线程
