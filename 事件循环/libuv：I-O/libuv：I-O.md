@@ -510,4 +510,4 @@ update_timeout:
 
 流程如下：
 
-![](image/image_ILNdO1oij_.png)
+![](image/image_cipV5Yk-7Y.png)

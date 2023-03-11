@@ -4,7 +4,7 @@
 
 libuv是一个异步I/O的跨平台c库，主要用于nodejs中。libuv架构如下：
 
-![](image/image-20230220183448342_zelZ_yzkZr.png)
+![](image/image-20230220183448342_e9gJg2rprC.png)
 
 libuv提供了以下封装：
 
@@ -18,7 +18,7 @@ libuv提供了以下封装：
 
 epoll是一种I/O事件通知机制，是linux 内核实现I/O多路复用的一个实现。相比较select、poll采用轮询的方式来检查文件描述符是否处于就绪态，epoll采用回调机制，它无须遍历整个被侦听的fd集合，只遍历那些被内核I/O事件异步唤醒而加入Ready队列的fd集合，因此能显著提高程序在大量并发连接中只有少量活跃的情况下的系统CPU利用率。
 
-![](image/v2-14e0536d872474b0851b62572b732e39_1440w_PnWX_Vdi.webp)
+![](image/v2-14e0536d872474b0851b62572b732e39_1440w_HHl0NQup.webp)
 
 ## eventloop
 
@@ -93,7 +93,7 @@ int uv_run(uv_loop_t* loop, uv_run_mode mode) {
 
 具体的流程如下：
 
-![](D:\noteBook\博客\nodejs\IO\assets\loop_iteration.png)
+![](image/loop_iteration_xAoS2_LzvW.png)
 
 ## handle
 

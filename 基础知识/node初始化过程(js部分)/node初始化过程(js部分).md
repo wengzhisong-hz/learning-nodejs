@@ -239,7 +239,7 @@ const {
 // 初始化nextTick
 const { nextTick, runNextTicks } = setupTaskQueue();
 
-// 预加载一系列的内建c++模块
+// 预加载一系列的内建js模块
 require('fs');
 require('v8');
 require('vm');

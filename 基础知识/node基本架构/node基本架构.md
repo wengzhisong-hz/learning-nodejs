@@ -2,7 +2,7 @@
 
 Nodejs源码js部分整体来说比较简单易读。通读完核心模块之后能够对nodejs有更好的认识。下面是nodejs的架构图：
 
-![](image/image-6569626_QVJjNsiwjV.png)
+![](image/image-6569626_buYKtyzT__.png)
 
 nodejs由五个部分组成：
 
