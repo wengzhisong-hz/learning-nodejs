@@ -4,7 +4,7 @@
 
 libuv的线程池包括两个部分：主线程和线程池。主线程的主要工作是生产任务，即将如timer队列、io队列中的watcher（fd及对应的callback）提交到任务队列中。线程池从任务队列中获取watcher对象，然后进行处理。处理完毕之后，通知主线程执行可能的callback。
 
-![](image/image_uJ4xB1Apu_.png)
+![](image/image_f1xugO-Jsp.png)
 
 ## 创建线程池
 

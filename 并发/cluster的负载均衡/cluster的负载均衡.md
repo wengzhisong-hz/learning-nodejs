@@ -43,7 +43,7 @@ process.on("message", (message) => {
 
 最终，我们可以看到，消息以rr的形式，在7个worker进程中分发：
 
-![](image/image-6569777_qMtnIQ2VGB.png)
+![](image/image-6569777_B3AJceSN6b.png)
 
 ## PM2
 

@@ -280,4 +280,4 @@ int uv_check_start(uv_check_t* check, uv_check_cb cb)
 
 我们可以总结出`immediate`的执行流程：
 
-![](image/image_XDJLTlWG8j.png)
+![](image/image_HuG-BRD8iU.png)

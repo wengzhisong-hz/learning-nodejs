@@ -495,9 +495,9 @@ int uv_run(uv_loop_t* loop, uv_run_mode mode) {
 
 引用 libuv 官网的一张图：
 
-![](image/loop_iteration_ufXg7O9UWp.png)
+![](image/loop_iteration_u0OBAcQu3n.png)
 
-至于每一步具体做了些什么，可以参考后面的[事件循环](../../事件循环/事件循环.md "事件循环")部分，我做了比较详细的分析。
+至于每一步具体做了些什么，可以参考后面的[libuv](../../libuv/libuv.md "libuv")部分，我做了比较详细的分析。
 
 ## 总结
 
